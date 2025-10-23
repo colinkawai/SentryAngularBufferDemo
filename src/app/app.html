@@ -1,0 +1,66 @@
+<div class="container">
+  <header class="header">
+    <h1>{{ title() }}</h1>
+    <p class="subtitle">Custom feedback form with Sentry Replay</p>
+  </header>
+
+  <div class="status-message" *ngIf="statusMessage">
+    {{ statusMessage }}
+  </div>
+
+  <section class="card">
+    <h2>Feedback Form</h2>
+    <div class="feedback-form">
+      <input
+        type="text"
+        [(ngModel)]="userName"
+        placeholder="Name"
+        class="feedback-input"
+      />
+      <input
+        type="email"
+        [(ngModel)]="userEmail"
+        placeholder="Email"
+        class="feedback-input"
+      />
+      <textarea
+        [(ngModel)]="customFeedbackMessage"
+        placeholder="Enter your feedback here..."
+        rows="4"
+        class="feedback-textarea"
+      ></textarea>
+      <button 
+        class="btn btn-primary" 
+        (click)="handleCustomFeedback()"
+        [disabled]="!customFeedbackMessage.trim()"
+      >
+        Submit Feedback
+      </button>
+    </div>
+  </section>
+
+  <section class="card" style="background: #f8f9fa;">
+    <h2>Implementation</h2>
+    <pre style="background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 4px; overflow-x: auto;"><code>// 1. Initialize Sentry
+Sentry.init(&#123;
+  integrations: [Sentry.replayIntegration()],
+  replaysSessionSampleRate: 0,
+  replaysOnErrorSampleRate: 1.0,
+&#125;);
+
+// 2. Start buffer on page load
+const replay = Sentry.getClient()?.getIntegrationByName('Replay');
+replay?.startBuffering();
+
+// 3. Handle feedback submission
+async handleFeedback() &#123;
+  await replay?.flush();
+  Sentry.captureFeedback(&#123;
+    message: this.customFeedbackMessage,
+    name: this.userName,
+    email: this.userEmail,
+  &#125;);
+&#125;</code></pre>
+  </section>
+
+</div>
