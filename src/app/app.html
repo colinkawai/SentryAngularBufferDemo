@@ -39,6 +39,18 @@
     </div>
   </section>
 
+  <section class="card">
+    <h2>Test On-Error Replay</h2>
+    <p>Click to throw a test exception and verify an error-linked replay is captured.</p>
+  </section>
+
+  <section class="card">
+    <h2>Debug</h2>
+    <div class="debug-actions">
+      <button class="btn" (click)="captureException()">Capture Exception (Sentry)</button>
+    </div>
+  </section>
+
   <section class="card" style="background: #f8f9fa;">
     <h2>Implementation</h2>
     <pre style="background: #2d2d2d; color: #f8f8f2; padding: 1rem; border-radius: 4px; overflow-x: auto;"><code>// 1. Initialize Sentry
@@ -48,9 +60,9 @@ Sentry.init(&#123;
   replaysOnErrorSampleRate: 1.0,
 &#125;);
 
-// 2. Start buffer on page load
-const replay = Sentry.getClient()?.getIntegrationByName('Replay');
-replay?.startBuffering();
+// 2. Optional: manually start buffering (not required with on-error sampling)
+const replay = Sentry.getReplay?.();
+replay?.startBuffering?.();
 
 // 3. Handle feedback submission
 async handleFeedback() &#123;

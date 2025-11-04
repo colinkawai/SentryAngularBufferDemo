@@ -18,23 +18,17 @@ export class App implements OnInit {
   statusMessage = '';
 
   ngOnInit() {
-    const replay = this.getReplayIntegration();
+    /*
+     const replay = this.getReplay();
     if (replay) {
       replay.startBuffering();
     }
+      */
   }
 
 
-  private getReplayIntegration(): any {
-    const client = Sentry.getClient();
-    if (!client) return null;
-    
-    let replay = client.getIntegrationByName?.('Replay');
-    if (!replay) {
-      const integrations = (client as any).getIntegrations?.() || [];
-      replay = integrations.find((i: any) => i.name === 'Replay');
-    }
-    return replay;
+  private getReplay(): any {
+    return (Sentry as any).getReplay?.();
   }
 
   async handleCustomFeedback() {
@@ -43,7 +37,7 @@ export class App implements OnInit {
       return;
     }
 
-    const replay = this.getReplayIntegration();
+    const replay = this.getReplay();
     
     try {
       if (replay?.flush) {
@@ -67,5 +61,10 @@ export class App implements OnInit {
 
   private setStatusMessage(message: string) {
     this.statusMessage = message;
+  }
+
+  captureException() {
+    Sentry.captureException(new Error('Captured exception to trigger on-error replay'));
+    this.setStatusMessage('captureException sent');
   }
 }
